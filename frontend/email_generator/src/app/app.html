@@ -1,0 +1,107 @@
+<main class="chat-shell">
+  <section class="chat-card" aria-label="Email assistant">
+    <header class="chat-header">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">✦</div>
+        <div>
+        <p class="eyebrow">Email assistant</p>
+        <h1>Draft an email</h1>
+        </div>
+      </div>
+      <span class="status"><span class="status-dot" aria-hidden="true"></span> Online</span>
+    </header>
+
+    <div #messageList class="messages" aria-live="polite">
+      @for (message of messages; track $index) {
+        <div class="message-row" [class.user-row]="message.role === 'user'">
+          <div class="message" [class.user-message]="message.role === 'user'">
+            {{ message.content }}
+          </div>
+        </div>
+      }
+
+      @if (isWaiting) {
+        <div class="message-row">
+          <div class="message typing">
+            <span class="typing-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            {{ loadingLabel }}
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (draft) {
+      <article class="draft-card">
+        <div class="draft-heading">
+          <div>
+            <p class="draft-label">Your generated email</p>
+            <h2>Generated Email</h2>
+          </div>
+          <div class="draft-tools">
+            <span class="draft-badge">Ready to review</span>
+            <button type="button" class="copy-button" (click)="copyDraft()" [class.copied]="copied">
+              {{ copied ? 'Copied' : 'Copy' }}
+            </button>
+          </div>
+        </div>
+        <pre aria-label="Generated email content">{{ draft }}</pre>
+      </article>
+    }
+
+    @if (error) {
+      <p class="error" role="alert">{{ error }}</p>
+    }
+
+    @if (isReviewing) {
+      <div class="actions">
+        <div class="action-copy">
+          <strong>Want to improve it?</strong>
+          <span>Regenerate it or tell me what to change.</span>
+        </div>
+        <button type="button" class="secondary-button" (click)="regenerate()" [disabled]="isWaiting">
+          @if (isWaiting) {
+            <span class="button-spinner" aria-hidden="true"></span>
+            Regenerating
+          } @else {
+            Regenerate
+          }
+        </button>
+        <form class="update-form" (ngSubmit)="updateEmail()">
+          <input
+            name="updateRequest"
+            [(ngModel)]="updateRequest"
+            placeholder="Describe what you want to change..."
+            aria-label="Describe an update"
+          />
+          <button type="submit" class="primary-button" [disabled]="!updateRequest.trim() || isWaiting">
+            @if (isWaiting) {
+              <span class="button-spinner" aria-hidden="true"></span>
+              Updating
+            } @else {
+              Update
+            }
+          </button>
+        </form>
+      </div>
+    } @else {
+      <form class="composer" (ngSubmit)="sendRequest()">
+        <span class="composer-icon" aria-hidden="true">↗</span>
+        <input
+          name="request"
+          [(ngModel)]="request"
+          placeholder="Ask for an email draft..."
+          aria-label="Email request"
+          [disabled]="isWaiting"
+        />
+        <button type="submit" class="primary-button" [disabled]="!request.trim() || isWaiting">
+          @if (isWaiting) {
+            <span class="button-spinner" aria-hidden="true"></span>
+            Sending
+          } @else {
+            Send
+          }
+        </button>
+      </form>
+    }
+  </section>
+</main>
