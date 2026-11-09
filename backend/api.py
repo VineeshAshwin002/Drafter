@@ -6,7 +6,7 @@ Run from the repository root:
 
 from pathlib import Path
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from .email_graph import resume_email_workflow, start_email_workflow
